@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Summary Result</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-light">
+
+        <div class="container mt-5">
+
+            <div class="card shadow">
+                <div class="card-body">
+
+                    <h2>AI Generated Summary</h2>
+                    <button class="btn btn-success mb-3" onclick="copySummary()">
+                        📋 Copy Summary
+                    </button>
+                    <a href="/download-summary"
+                        class="btn btn-primary mb-3">
+                        📥 Download Summary PDF
+                    </a>
+                    <div class="card">
+                        <div class="card-body" id="summaryContent">
+                            {{ summary|safe }}
+                        </div>
+                    </div>
+                    
+                    <a href="/" class="btn btn-primary">
+                        Upload Another PDF
+                    </a>
+
+                </div>
+            </div>
+            <hr>
+
+            <h3>💬 Chat with PDF</h3>
+
+            <form action="/ask" method="POST">
+                <input type="hidden" name="question" value="Give a short overview of this PDF">
+
+                <button class="btn btn-warning">
+                    💬 Open Chat
+                </button>
+            </form>
+
+        </div>
+        <script>
+            function copySummary() 
+            {
+
+                const summary =document.getElementById("summaryContent").innerText;
+
+                navigator.clipboard.writeText(summary);
+
+                const btn = document.querySelector("button");
+
+                btn.innerText = "✅ Copied!";
+
+                setTimeout(() => {
+                    btn.innerText = "📋 Copy Summary";
+                }, 2000);
+            }
+        </script>
+    </body>
+</html>
