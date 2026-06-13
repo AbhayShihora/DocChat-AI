@@ -128,7 +128,7 @@ def summarize_text(text, length):
     try:
         response = model.generate_content(prompt + text[:15000] )
 
-        summary = response.text
+        summary = response
         summary = summary.replace( "```html", "")
         summary = summary.replace("```","" )
 
