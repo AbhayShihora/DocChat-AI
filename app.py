@@ -128,19 +128,22 @@ def summarize_text(text, length):
     try:
         response = model.generate_content(prompt + text[:15000] )
 
-        summary = response
+        summary = response.text
         summary = summary.replace( "```html", "")
         summary = summary.replace("```","" )
 
         return summary
 
-    except Exception:
-        return """  <div class="alert alert-danger"> <h4>⚠️ AI Service Unavailable</h4>
-                        <p>
-                            Unable to generate summary right now.
-                            Please try again later.
-                        </p>
-                    </div> """
+    except Exception as e:
+
+        print("Gemini Error:", str(e))
+
+        return f"""
+        <div class="alert alert-danger">
+            <h4>⚠️ AI Service Unavailable</h4>
+            <p>{str(e)}</p>
+        </div>
+        """
 
 
 #Download summary
