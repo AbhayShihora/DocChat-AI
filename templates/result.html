@@ -1,66 +1,243 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Summary Result</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary Result - DocChat AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-light">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            
+            /* Light Theme Variables */
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --inner-card-bg: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-summary: #1e293b;
+            --border-color: rgba(0, 0, 0, 0.08);
+        }
 
-        <div class="container mt-5">
+        /* Dark Theme Class Override */
+        body.dark-theme {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --inner-card-bg: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-summary: #f8fafc;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
 
-            <div class="card shadow">
-                <div class="card-body">
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
 
-                    <h2>AI Generated Summary</h2>
-                    <button class="btn btn-success mb-3" onclick="copySummary()">
-                        📋 Copy Summary
-                    </button>
-                    <a href="/download-summary"
-                        class="btn btn-primary mb-3">
-                        📥 Download Summary PDF
-                    </a>
-                    <div class="card">
-                        <div class="card-body" id="summaryContent">
-                            {{ summary|safe }}
+        /* Ambient background glow styles */
+        .result-section {
+            position: relative;
+        }
+        body.light-theme .result-section {
+            background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.05), transparent 45%);
+        }
+        body.dark-theme .result-section {
+            background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.1), transparent 50%);
+        }
+
+        /* Custom Adaptive Cards */
+        .custom-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.02);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Fixed Summary Content Box Styles */
+        .summary-container-box {
+            background-color: var(--inner-card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            color: var(--text-summary) !important;
+            line-height: 1.7;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Ensures all sub-elements inside dynamic summary text respect theme colors */
+        .summary-container-box h1, 
+        .summary-container-box h2, 
+        .summary-container-box h3, 
+        .summary-container-box h4, 
+        .summary-container-box h5, 
+        .summary-container-box h6,
+        .summary-container-box strong {
+            color: var(--text-main) !important;
+        }
+        
+        .summary-container-box p, 
+        .summary-container-box li {
+            color: var(--text-summary) !important;
+        }
+
+        /* Text Color Utilities */
+        .text-main-color { color: var(--text-main) !important; }
+        .text-muted-color { color: var(--text-muted) !important; }
+
+        /* Buttons Styling matching landing page layout */
+        .btn-gradient {
+            background: var(--primary-gradient);
+            color: white !important;
+            border: none;
+            font-weight: 600;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .btn-gradient:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-action-outline {
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-main);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-action-outline:hover {
+            background: rgba(124, 58, 237, 0.08);
+            border-color: #7c3aed;
+            color: #7c3aed;
+        }
+
+        .navbar {
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body id="bodyTheme" class="light-theme">
+
+    <nav class="navbar navbar-expand-lg py-3 sticky-top" id="mainNav">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="fa-solid fa-robot text-primary" style="-webkit-text-fill-color: initial;"></i> DocChat AI
+            </a>
+            <button id="themeToggle" class="btn btn-sm rounded-pill px-3 py-2 btn-outline-secondary">
+                <i class="fa-solid fa-moon me-2"></i>Dark Mode
+            </button>
+        </div>
+    </nav>
+
+    <main class="result-section py-5">
+        <div class="container" style="max-width: 850px;">
+            
+            <div class="card custom-card p-4 p-md-5">
+                <div class="card-body p-0">
+                    
+                    <div class="d-md-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-translucent">
+                        <div class="mb-3 mb-md-0">
+                            <h2 class="fw-bold text-main-color m-0 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles text-primary fs-3"></i> AI Generated Summary
+                            </h2>
+                            <p class="text-muted-color small m-0 mt-1">Processed successfully using Gemini AI models.</p>
+                        </div>
+                        
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-sm btn-action-outline rounded-pill px-3 py-2" id="copyBtn" onclick="copySummary()">
+                                <i class="fa-regular fa-copy me-2"></i>Copy Summary
+                            </button>
+                            <a href="/download-summary" class="btn btn-sm btn-action-outline rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-download me-2"></i>Download PDF
+                            </a>
                         </div>
                     </div>
-                    
-                    <a href="/" class="btn btn-primary">
-                        Upload Another PDF
-                    </a>
+
+                    <div class="summary-container-box mb-4 shadow-sm" id="summaryContent">
+                        {{ summary|safe }}
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center pt-3 gap-3">
+                        <a href="/" class="btn btn-action-outline rounded-pill px-4 py-2">
+                            <i class="fa-solid fa-arrow-left me-2"></i>Upload Another PDF
+                        </a>
+
+                        <form action="/ask" method="POST" class="m-0">
+                            <input type="hidden" name="question" value="Give a short overview of this PDF">
+                            <button class="btn btn-gradient rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2">
+                                <i class="fa-regular fa-comments"></i> Start Contextual Chat
+                            </button>
+                        </form>
+                    </div>
 
                 </div>
             </div>
-            <hr>
-
-            <h3>💬 Chat with PDF</h3>
-
-            <form action="/ask" method="POST">
-                <input type="hidden" name="question" value="Give a short overview of this PDF">
-
-                <button class="btn btn-warning">
-                    💬 Open Chat
-                </button>
-            </form>
 
         </div>
-        <script>
-            function copySummary() 
-            {
+    </main>
 
-                const summary =document.getElementById("summaryContent").innerText;
+    <footer class="text-center py-4 mt-auto border-top border-translucent">
+        <div class="container">
+            <p class="text-muted-color mb-0 small">
+                DocChat AI – Intelligent PDF Assistant © 2026 | Developed by Abhay Shihora
+            </p>
+        </div>
+    </footer>
 
-                navigator.clipboard.writeText(summary);
+    <script>
+        // Copy Summary Utility Logic Engine
+        function copySummary() {
+            const summaryText = document.getElementById("summaryContent").innerText;
+            navigator.clipboard.writeText(summaryText);
 
-                const btn = document.querySelector("button");
+            const copyBtn = document.getElementById("copyBtn");
+            copyBtn.innerHTML = '<i class="fa-solid fa-check me-2 text-success"></i>Copied!';
 
-                btn.innerText = "✅ Copied!";
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="fa-regular fa-copy me-2"></i>Copy Summary';
+            }, 2000);
+        }
 
-                setTimeout(() => {
-                    btn.innerText = "📋 Copy Summary";
-                }, 2000);
+        // Layout Theme Logic Management Script Engine
+        const body = document.getElementById("bodyTheme");
+        const toggleBtn = document.getElementById("themeToggle");
+        const mainNav = document.getElementById("mainNav");
+
+        function setDarkTheme(isDark) {
+            if(isDark) {
+                body.classList.remove("light-theme");
+                body.classList.add("dark-theme");
+                mainNav.classList.remove("navbar-light", "bg-light");
+                mainNav.classList.add("navbar-dark", "bg-dark");
+                toggleBtn.innerHTML = '<i class="fa-solid fa-sun me-2"></i>Light Mode';
+                localStorage.setItem("theme", "dark");
+            } else {
+                body.classList.remove("dark-theme");
+                body.classList.add("light-theme");
+                mainNav.classList.remove("navbar-dark", "bg-dark");
+                mainNav.classList.add("navbar-light", "bg-light");
+                toggleBtn.innerHTML = '<i class="fa-solid fa-moon me-2"></i>Dark Mode';
+                localStorage.setItem("theme", "light");
             }
-        </script>
-    </body>
+        }
+
+        // Mode Interaction Router
+        toggleBtn.addEventListener("click", () => {
+            const isCurrentDark = body.classList.contains("dark-theme");
+            setDarkTheme(!isCurrentDark);
+        });
+
+        // Initialize Native Default Framework State Cache
+        const savedTheme = localStorage.getItem("theme") || "light";
+        setDarkTheme(savedTheme === "dark");
+    </script>
+</body>
 </html>

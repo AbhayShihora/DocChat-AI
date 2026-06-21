@@ -1,318 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AI PDF Summarizer</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocChat AI - Intelligent PDF Assistant</title>
+    <!-- Latest Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <style>
-            @media (max-width: 768px) {
-
-                .navbar .container {
-                    flex-direction: column;
-                    text-align: center;
-                }
-
-                #themeToggle {
-                    margin-top: 10px;
-                    width: 90%;
-                }
-
-                .hero-title {
-                    font-size: 2rem !important;
-                }
-
-                .hero-subtitle {
-                    font-size: 1rem !important;
-                }
-
-                .upload-card {
-                    margin: 0 10px;
-                }
-
-                #loadingOverlay h3 {
-                    font-size: 1.2rem;
-                    text-align: center;
-                    padding: 0 20px;
-                }
-
-                footer p {
-                    font-size: 0.9rem;
-                    padding: 0 10px;
-                }
-
-                .navbar-brand {
-                    font-size: 1rem;
-                    white-space: normal;
-                    text-align: center;
-                }
-            }
-        </style>
-    </head>
-    <body id="bodyTheme" style="background:#f4f7fb;min-height:100vh;">
-
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-3">
-
-            <div class="container d-flex justify-content-between align-items-center flex-wrap">
-                <a class="navbar-brand fw-bold" href="#">
-                    🤖 DocChat AI – Intelligent PDF Assistant
-                </a>
-                <button
-                    id="themeToggle"
-                    class="btn btn-outline-light">
-                    🌙 Dark Mode
-                </button>
-            </div>
-        </nav>
-
-        <!-- Hero Section -->
-        <section class="py-5">
-            <div class="container text-center">
-
-                <h1 class="display-3 fw-bold text-white hero-title">
-                    DocChat AI – Intelligent PDF Assistant
-                </h1>
-
-                <p class="lead text-white mt-3 hero-subtitle">
-                    Upload any PDF and Summarize, Analyze & Chat with PDFs using AI
-                </p>
-
-                <div class="card border-0 shadow-lg p-4 mt-4 mx-auto upload-card" style="max-width:600px;backdrop-filter: blur(10px);background: rgba(255,255,255,0.95);border-radius:20px;">
-
-                    <form id="uploadForm"
-                        action="/upload"
-                        method="POST"
-                        enctype="multipart/form-data">
-
-                        <div class="mb-3">
-                            <input type="file"
-                                class="form-control"
-                                name="pdf_file"
-                                accept=".pdf"
-                                required>
-                        </div>
-
-                        <div class="mb-3">
-                            <select class="form-select"
-                                    name="summary_length">
-
-                                <option value="short">
-                                    Short Summary
-                                </option>
-
-                                <option value="medium" selected>
-                                    Medium Summary
-                                </option>
-
-                                <option value="detailed">
-                                    Detailed Summary
-                                </option>
-
-                            </select>
-                        </div>
-
-                        <button class="btn btn-primary w-100">
-                            🚀 Generate Summary
-                        </button>
-
-                    </form>
-
-                </div>
-
-            </div>
-        </section>
-         <div
-            id="loadingOverlay"
-            style="
-            display:none;
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            background:rgba(0,0,0,0.7);
-            z-index:9999;
-            ">
-
-            <div
-                class="d-flex flex-column justify-content-center align-items-center h-100 text-white">
-
-                <div
-                    class="spinner-border"
-                    style="
-                    width:4rem;
-                    height:4rem;
-                    ">
-                </div>
-
-                <h3 class="mt-4">
-                    🤖 AI is generating your summary...
-                </h3>
-
-            </div>
-
-        </div>
-        <!-- Features -->
-        <section class="pb-5">
-        <div class="container">
-
-            <div class="row g-4">
-
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <h3>📄</h3>
-                            <h5>Upload PDF</h5>
-                            <p>
-                                Upload any PDF document
-                                securely and quickly.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <h3>🤖</h3>
-                            <h5>AI Summary</h5>
-                            <p>
-                                Generate intelligent
-                                summaries using Gemini AI.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <h3>💬</h3>
-                            <h5>Chat with PDF</h5>
-                            <p>
-                                Ask questions directly
-                                from your uploaded PDF.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             
+            /* Light Theme Variables */
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --upload-dash: #cbd5e1;
+            --btn-secondary-bg: rgba(79, 70, 229, 0.06);
+            --btn-secondary-text: #4f46e5;
+        }
 
+        /* Dark Theme Class Override */
+        body.dark-theme {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --upload-dash: #475569;
+            --btn-secondary-bg: rgba(255, 255, 255, 0.07);
+            --btn-secondary-text: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dynamic Background Glows */
+        .hero-section {
+            position: relative;
+        }
+        body.light-theme .hero-section {
+            background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.06), transparent 45%),
+                        radial-gradient(circle at bottom left, rgba(79, 70, 229, 0.04), transparent 45%);
+        }
+        body.dark-theme .hero-section {
+            background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.12), transparent 50%),
+                        radial-gradient(circle at bottom left, rgba(79, 70, 229, 0.08), transparent 50%);
+        }
+
+        /* Custom Adaptive Cards */
+        .custom-card, .feature-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.02);
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Text Color Utilities */
+        .text-main-color { color: var(--text-main) !important; }
+        .text-muted-color { color: var(--text-muted) !important; }
+
+        /* Custom Interactive Drop Zone */
+        .upload-zone {
+            border: 2px dashed var(--upload-dash);
+            border-radius: 16px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            background-color: rgba(124, 58, 237, 0.01);
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        .upload-zone:hover {
+            border-color: #7c3aed;
+            background-color: rgba(124, 58, 237, 0.03);
+        }
+        .upload-zone input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Primary Gradient Button UI */
+        .btn-gradient {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 14px 24px;
+            border-radius: 14px;
+            transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-gradient:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            color: white;
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Secondary Adaptive Chat Button */
+        .btn-chat-adaptive {
+            background-color: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text) !important;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            padding: 14px 24px;
+            border-radius: 14px;
+            transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+        }
+        .btn-chat-adaptive:hover {
+            transform: translateY(-1px);
+            background-color: rgba(124, 58, 237, 0.15);
+        }
+
+        /* Feature Icon Graphics */
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.12) 0%, rgba(124, 58, 237, 0.12) 100%);
+            color: #7c3aed;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 20px;
+        }
+
+        /* Input Controls Theme Support */
+        body.dark-theme .form-select {
+            background-color: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        body.dark-theme .form-select:focus {
+            background-color: #1e293b;
+            color: #f1f5f9;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 0.25rem rgba(124, 58, 237, 0.25);
+        }
+
+        /* Loading Screen Mask */
+        #loadingOverlay {
+            backdrop-filter: blur(8px);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.2rem !important; }
+        }
+    </style>
+</head>
+<body id="bodyTheme" class="light-theme">
+
+    <!-- Navbar Container -->
+    <nav class="navbar navbar-expand-lg py-3 sticky-top" id="mainNav">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="fa-solid fa-robot text-primary" style="-webkit-text-fill-color: initial;"></i> DocChat AI
+            </a>
+            <button id="themeToggle" class="btn btn-sm rounded-pill px-3 py-2 btn-outline-secondary">
+                <i class="fa-solid fa-moon me-2"></i>Dark Mode
+            </button>
         </div>
-        </section>
-        <footer class="text-center text-white py-4">
+    </nav>
 
-            <hr class="text-white">
+    <!-- Main Workspace Application Section -->
+    <section class="hero-section py-5 min-vh-50 d-flex align-items-center">
+        <div class="container text-center">
+            <div class="max-w-3xl mx-auto mb-4">
+                <h1 class="display-4 fw-bold hero-title mb-3 text-main-color">
+                    Intelligent PDF Assistant
+                </h1>
+                <p class="lead text-muted-color fs-5 mx-auto" style="max-width: 600px;">
+                    Upload your documents to effortlessly extract insights, generate summaries, and instantly chat with AI.
+                </p>
+            </div>
 
-            <p>
-                DocChat AI – Intelligent PDF Assistant © 2026
-                | Developed by Abhay Shihora
+            <!-- Central Form Panel Card -->
+            <div class="card custom-card p-4 p-md-5 mt-4 mx-auto text-start" style="max-width:580px;">
+                <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+                    
+                    <!-- File Drag-and-Drop Area -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold mb-2 text-main-color">Upload Document</label>
+                        <div class="upload-zone">
+                            <i class="fa-solid fa-cloud-arrow-up text-primary fs-1 mb-3"></i>
+                            <h6 class="fw-semibold mb-1 text-main-color">Drag and drop your PDF here</h6>
+                            <p class="text-muted-color small mb-0">or click to browse from files (Max size: 10MB)</p>
+                            <input type="file" name="pdf_file" id="fileInput" accept=".pdf" required>
+                        </div>
+                        <div id="fileSelectedName" class="text-success small mt-2 fw-medium text-center" style="display:none;"></div>
+                    </div>
+
+                    <!-- Configuration Dropdown Summary Length -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold mb-2 text-main-color">Summary Depth</label>
+                        <select class="form-select form-select-lg fs-6" name="summary_length">
+                            <option value="short">Short Summary (Quick Overview)</option>
+                            <option value="medium" selected>Medium Summary (Standard Breakdown)</option>
+                            <option value="detailed">Detailed Summary (Comprehensive Report)</option>
+                        </select>
+                    </div>
+
+                    <!-- Modern Action Buttons Container Stack -->
+                    <div class="d-flex flex-column gap-3 mt-2">
+                        <button type="submit" class="btn btn-gradient btn-lg w-100 d-flex align-items-center justify-content-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Generate AI Summary
+                        </button>
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Background Processing View Overlay -->
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.85); z-index:9999;">
+        <div class="d-flex flex-column justify-content-center align-items-center h-100 text-white">
+            <div class="spinner-border text-primary mb-4" style="width: 3.5rem; height: 3.5rem; border-width: 4px;" role="status"></div>
+            <h4 class="fw-semibold">Analyzing document structure...</h4>
+            <p class="text-white-50 small">Gemini AI is generating your summary layout.</p>
+        </div>
+    </div>
+
+    <!-- Feature Grid Block Components -->
+    <section class="py-5 mt-2">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card p-3 text-center">
+                        <div class="card-body">
+                            <div class="icon-box"><i class="fa-solid fa-file-pdf"></i></div>
+                            <h5 class="fw-bold mb-2 text-main-color">Instant Upload</h5>
+                            <p class="text-muted-color small mb-0">Securely parse and extract structural contents from any standard PDF framework effortlessly.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card p-3 text-center">
+                        <div class="card-body">
+                            <div class="icon-box"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <h5 class="fw-bold mb-2 text-main-color">Gemini AI Engine</h5>
+                            <p class="text-muted-color small mb-0">Generate conceptual summaries mapped down to distinct targeted lengths seamlessly.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card p-3 text-center">
+                        <div class="card-body">
+                            <div class="icon-box"><i class="fa-solid fa-comments"></i></div>
+                            <h5 class="fw-bold mb-2 text-main-color">Contextual Chat</h5>
+                            <p class="text-muted-color small mb-0">Query key insights directly through chat pipelines referencing context points directly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Identity Block Area -->
+    <footer class="text-center py-4 mt-5 border-top border-translucent">
+        <div class="container">
+            <p class="text-muted-color mb-0 small">
+                DocChat AI – Intelligent PDF Assistant © 2026 | Developed by Abhay Shihora
             </p>
+        </div>
+    </footer>
 
-        </footer>
-       
-        <script>
+    <!-- Client-Side Runtime Theme Routing Scripts -->
+    <script>
+        // Trigger Full Screen Loading Spinner Layout Frame
+        document.getElementById("uploadForm").addEventListener("submit", function() {
+            document.getElementById("loadingOverlay").style.display = "block";
+        });
 
-            document
-            .getElementById("uploadForm")
-            .addEventListener(
-                "submit",
-                function(){
-
-                    document
-                    .getElementById(
-                        "loadingOverlay"
-                    )
-                    .style.display =
-                    "block";
-
-                }
-            );
-
-        </script>
-        <script>
-
-            const body = document.getElementById("bodyTheme");
-
-            const toggleBtn =
-            document.getElementById("themeToggle");
-
-            function enableDarkMode(){
-
-                body.style.background =
-                "#121212";
-
-                body.style.color =
-                "white";
-
-                localStorage.setItem(
-                    "theme",
-                    "dark"
-                );
-
-                toggleBtn.innerHTML =
-                "☀️ Light Mode";
+        // Track Input State Event Handlers
+        const fileInput = document.getElementById('fileInput');
+        const fileSelectedName = document.getElementById('fileSelectedName');
+        
+        fileInput.addEventListener('change', function() {
+            if(this.files && this.files.length > 0) {
+                fileSelectedName.innerText = `Selected File: ${this.files[0].name}`;
+                fileSelectedName.style.display = 'block';
+            } else {
+                fileSelectedName.style.display = 'none';
             }
+        });
 
-            //<body style="background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;"">
-            function enableLightMode(){
+        // Layout Theme Logic Management Script Engine
+        const body = document.getElementById("bodyTheme");
+        const toggleBtn = document.getElementById("themeToggle");
+        const mainNav = document.getElementById("mainNav");
 
-                body.style.background =
-                "#667eea";
-
-                body.style.color =
-                "black";
-
-                localStorage.setItem(
-                    "theme",
-                    "light"
-                );
-
-                toggleBtn.innerHTML =
-                "🌙 Dark Mode";
+        function setDarkTheme(isDark) {
+            if(isDark) {
+                body.classList.remove("light-theme");
+                body.classList.add("dark-theme");
+                mainNav.classList.remove("navbar-light", "bg-light");
+                mainNav.classList.add("navbar-dark", "bg-dark");
+                toggleBtn.innerHTML = '<i class="fa-solid fa-sun me-2"></i>Light Mode';
+                localStorage.setItem("theme", "dark");
+            } else {
+                body.classList.remove("dark-theme");
+                body.classList.add("light-theme");
+                mainNav.classList.remove("navbar-dark", "bg-dark");
+                mainNav.classList.add("navbar-light", "bg-light");
+                toggleBtn.innerHTML = '<i class="fa-solid fa-moon me-2"></i>Dark Mode';
+                localStorage.setItem("theme", "light");
             }
+        }
 
-            const savedTheme =
-            localStorage.getItem("theme");
+        // Mode Interaction Router
+        toggleBtn.addEventListener("click", () => {
+            const isCurrentDark = body.classList.contains("dark-theme");
+            setDarkTheme(!isCurrentDark);
+        });
 
-            if(savedTheme === "dark"){
-
-                enableDarkMode();
-
-            }
-            else{
-
-                enableLightMode();
-
-            }
-
-            toggleBtn.addEventListener(
-                "click",
-                function(){
-
-                    if(
-                        localStorage.getItem(
-                            "theme"
-                        ) === "dark"
-                    ){
-
-                        enableLightMode();
-
-                    }
-                    else{
-
-                        enableDarkMode();
-
-                    }
-
-                }
-            );
-
-        </script>
-    </body>
+        // Initialize Native Default Framework State Cache
+        const savedTheme = localStorage.getItem("theme") || "light";
+        setDarkTheme(savedTheme === "dark");
+    </script>
+</body>
 </html>
