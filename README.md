@@ -13,6 +13,9 @@ DocChat AI is an AI-powered web application that allows users to upload PDF docu
 * 📱 Mobile Responsive Design
 * ⚠️ Error Handling
 * ⏳ Loading Animations
+- OCR support for scanned PDFs
+- Automatic fallback to OCR when text extraction fails
+- Responsive UI
 
 ## 🛠️ Technologies Used
 
