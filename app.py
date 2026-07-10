@@ -50,6 +50,37 @@ def upload_pdf():
         global chat_history
 
         pdf_content = extracted_text
+        session["pdf_content"] = extracted_text
+        chat_history = []
+        #print("Text Length:", len(extracted_text))
+
+        summary = summarize_text(extracted_text, summary_length)
+        session["summary"] = summary
+
+        return render_template("result.html",summary=summary)
+
+    return "No file selected"
+
+#Temp upload
+def up():
+    pdf_file = request.files['pdf_file']
+    summary_length = request.form["summary_length"]
+
+    if not pdf_file.filename.endswith('.pdf'):
+        return """<h3 style='color:red'>  Please upload a PDF file only. </h3>   """
+    
+    if pdf_file:
+        filename = secure_filename(pdf_file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        pdf_file.save(file_path)
+
+        extracted_text = extract_text_from_pdf(file_path)
+        global pdf_content
+        global chat_history
+
+        pdf_content = extracted_text
+        session["pdf_content"] = extracted_text
         chat_history = []
         #print("Text Length:", len(extracted_text))
 
@@ -64,10 +95,11 @@ def upload_pdf():
 @app.route('/ask', methods=['POST'])
 def ask():
 
-    global pdf_content
     global chat_history
 
     question = request.form['question']
+
+    # pdf_content = session.get("pdf_content", "")
 
     answer = ask_pdf_question(
         pdf_content,
