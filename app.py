@@ -9,6 +9,7 @@ from flask import session, send_file
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 import io
+from utils.ocr import extract_text_from_scanned_pdf
 
 md="gemini-3.1-flash-lite"
 pdf_content = ""
@@ -137,13 +138,19 @@ def extract_text_from_pdf(pdf_path):
         reader = PyPDF2.PdfReader(file)
 
         for page in reader.pages:
-            text += page.extract_text() or ""
+            page_text = page.extract_text()
 
+            if page_text:
+                text += page_text + "\n"
+
+    # If PyPDF2 couldn't extract any text, use OCR
     if not text.strip():
-        return """ <h3 style='color:red'> No readable text found in PDF. Please upload a text-based PDF. </h3> """
-    
-    return text
 
+        #print("No text found. Switching to OCR...")
+
+        text = extract_text_from_scanned_pdf(pdf_path)
+
+    return text
 #Summarizer function
 def summarize_text(text, length):
 
